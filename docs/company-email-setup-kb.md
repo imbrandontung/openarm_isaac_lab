@@ -7,6 +7,18 @@
 
 ---
 
+## ⛔ 環境使用限制（重要）
+
+**以後不使用 Claude Code 的「雲端／遠端環境」來執行需要動手操作的設定工作。**
+
+- **原因**：雲端／遠端 Claude Code 的執行端是雲端 Linux 機器，**無法控制本機已登入的 Chrome、無法代為操作瀏覽器**（Google Workspace、Cloudflare 等設定頁面全都碰不到）。
+- **改用方式（擇一，需能實際操作瀏覽器）**：
+  - **Cowork（Claude 桌面 App）** — 內建電腦／瀏覽器操作能力，優先使用。
+  - **本機終端機執行 Claude Code** — 讓 `claude` 跑在自己電腦上，並自行掛上 browser MCP（見 §7）。
+- **如何判斷是不是雲端環境**：在終端機執行 `uname -a` 顯示 `Linux vm`、`whoami` 為 `root`、根目錄有 `container_info.json`，即為雲端沙盒 → 不適用本類需要動手點瀏覽器的工作。
+
+---
+
 ## 0. 目前狀態速覽（含實測診斷）
 
 以下為從外部 DNS 實際查到的 `im-brandon.com` 現況：
