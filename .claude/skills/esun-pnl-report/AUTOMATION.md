@@ -13,9 +13,12 @@
 2. `download_file_content` 抓進環境，解碼成 PDF。
 3. **向使用者索取身分證字號當密碼**（不儲存、不寫檔）。解密。
 4. 用 TWSE `get_realtime_quote` 取庫存標的當日價（力山=1515、臻鼎-KY=4958…）。
-5. 執行 `scripts/run_report.py`（或依 SKILL.md 步驟）算每月損益 + 未實現 + 出圖。
-6. 用 `SendUserFile` 回傳統計圖與摘要。
-7. （選）若使用者提供玉山官方「已實現/未實現損益查詢」截圖，以官方數字覆蓋推估值。
+5. 算每月已實現價差（run_report.py）+ 未實現價差 + **現金股利**（dividends.py，每股股利用 TWSE
+   `get_company_dividend` × 除息股數）。**含配息＝價差＋股利**。
+6. 產生**含配息 HTML 報表**（`report_html.py`，把資料整理成 data dict）；用 `SendUserFile`
+   （display: render）回傳給使用者。
+7. **精準模式**：請使用者提供玉山官方「已實現損益查詢／庫存損益查詢／現金股利查詢」截圖，
+   以官方數字覆蓋推估值；**繼承取得（成本記 0）之持股獨立為 legacy、不列入操作損益**。
 
 ## 為何需要人工提供密碼
 PDF 以身分證字號加密；為保護個資，**不把身分證字號存進 Routine、環境變數或 repo**。
