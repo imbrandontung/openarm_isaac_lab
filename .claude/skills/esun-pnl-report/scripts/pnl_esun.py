@@ -14,13 +14,21 @@ from collections import defaultdict
 from parse_esun import parse_statement
 
 
-def compute(files):
-    """files: 已解密對帳單 PDF 路徑清單。回傳每月彙總 list。"""
+def compute(files, opening=None):
+    """files: 已解密對帳單 PDF 路徑清單。回傳每月彙總 list。
+
+    opening: 選填，開倉庫存 {(name, cat): [shares, cost]}。用來注入早於首張對帳單的
+    舊庫存（例如以玉山官方「庫存損益查詢」的股數×平均成本），修正「現股成本推估偏高」
+    的問題——有它之後，賣出的已實現損益才會用正確的加權平均成本計算。
+    """
     stmts = [parse_statement(f) for f in files]
     stmts = [s for s in stmts if s["month"]]
     stmts.sort(key=lambda s: s["month"])
 
     ledger = defaultdict(lambda: [0.0, 0.0])   # (name,cat) -> [shares, cost(含買入手續費)]
+    if opening:
+        for k, v in opening.items():
+            ledger[k] = [float(v[0]), float(v[1])]
     monthly = []
     for s in stmts:
         rp = 0.0

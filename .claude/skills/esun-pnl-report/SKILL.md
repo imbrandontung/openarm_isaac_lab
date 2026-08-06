@@ -60,6 +60,18 @@ python scripts/report_html.py report_data.json esun_pnl.html
 `report_html.build_html()` 產生自包含、深淺色自適應、可 hover、附資料表的 HTML。
 `operation 總損益 = 已實現價差 + 未實現價差 + 現金股利`；legacy（遺產）持股獨立卡、不計入。
 
+## 開倉庫存（修正現股成本）
+若持有人有早於首張對帳單的舊庫存（成本與近期買進不同），`pnl_esun.compute(files, opening=...)`
+可注入開倉庫存 `{(name, cat): [shares, cost]}`（用玉山官方「庫存損益查詢」的股數×平均成本），
+讓賣出的已實現損益用正確加權平均成本計算，修正「現股成本偏高」。
+
+## 自我驗證
+`python validate.py [fixture.json]`（預設 `examples/sample_official.json`，**去識別化假資料**）
+驗證損益彙總、遺產排除、配息交叉核對與 HTML 產出；全通過 exit 0。不需對帳單 PDF。
+> 隱私：committed 的 fixture 一律用去識別化假資料；真實帳戶數字只在當次 session 驗證、不入庫。
+> 真實 7 月官方案例已於 session 驗證通過（已實現 +1,459,316、未實現 +2,281,280、配息 +153,315、
+> 操作總損益 +3,893,911，遺產玉山金另計）。
+
 ## 相依套件
 `pip install pikepdf pdfplumber matplotlib`；中文字型 `wqy-zenhei`（Debian/Ubuntu 內建）。
 
