@@ -37,6 +37,7 @@ def parse_statement(path):
 
     nav = None
     ym = None
+    rebate = 0.0   # 手續費折讓金額（對帳單底部）
     for ln in lines:
         m = re.search(r'(\d{4})年(\d{2})月', ln)
         if m and ym is None:
@@ -45,6 +46,9 @@ def parse_statement(path):
             mm = re.search(r'\$([\d,]+)', ln)
             if mm:
                 nav = int(mm.group(1).replace(',', ''))
+        rb = re.search(r'手續費折讓金額\s*([\d,]+)\s*元', ln)
+        if rb:
+            rebate = float(rb.group(1).replace(',', ''))
 
     txns = []
     i = 0
@@ -74,7 +78,7 @@ def parse_statement(path):
             i += 5
         else:
             i += 1
-    return dict(month=ym, nav=nav, txns=txns)
+    return dict(month=ym, nav=nav, rebate=rebate, txns=txns)
 
 
 def validate(path):

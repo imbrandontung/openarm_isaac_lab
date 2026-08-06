@@ -52,7 +52,17 @@ def build_html(data, out="esun_pnl.html"):
                        for a, b in [subfmt(x) for x in items])
 
     real_xl = xls(months, lambda m: (m["month"], ("玉山官方・已含費用" if m.get("official")
-                  else f"手續費 {m.get('fee',0):,.0f}｜利息 {m.get('interest',0):,.0f}")))
+                  else f"手續費 {m.get('fee',0):,.0f}｜折讓 {m.get('rebate',0):,.0f}｜利息 {m.get('interest',0):,.0f}")))
+
+    # 費用/折讓摘要（僅統計有手續費資料的月份）
+    fee_rows = [m for m in months if m.get("fee")]
+    tot_fee = sum(m.get("fee", 0) for m in fee_rows)
+    tot_reb = sum(m.get("rebate", 0) for m in fee_rows)
+    tot_net = tot_fee - tot_reb
+    fee_summary = ""
+    if tot_fee:
+        fee_summary = (f"　·　手續費合計 {tot_fee:,.0f}｜折讓 {tot_reb:,.0f}｜"
+                       f"淨手續費 {tot_net:,.0f}（折讓率 {tot_reb/tot_fee*100:.0f}%）")
     un_xl = xls(holds, lambda h: (h["name"], f"{h['shares']:,}股 @{h['avg']:.2f}"))
     div_xl = xls(divs, lambda d: (d["name"], f"{d['per_share']:.2f} × {d['shares']:,}股"))
 
@@ -77,6 +87,7 @@ def build_html(data, out="esun_pnl.html"):
         "@REALIZED@": _n(realized_total), "@UNREAL@": _n(unreal_total), "@DIV@": _n(div_total),
         "@DIVDETAIL@": "＋".join(f"{d['name']} {d['amount']:,.0f}" for d in divs),
         "@LEGACY@": legacy_html,
+        "@FEESUMMARY@": fee_summary,
         "@REAL_XL@": real_xl, "@UN_XL@": un_xl, "@DIV_XL@": div_xl,
         "@TROWS@": trows,
         "@REAL_JS@": json.dumps(real_js, ensure_ascii=False),
@@ -123,7 +134,7 @@ details{margin-top:4px}summary{cursor:pointer;color:var(--ink2);font-size:13px;p
 @media (max-width:720px){.tiles{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.hero .big{font-size:32px}}
 </style></head><body><div class="wrap">
 <h1>玉山證券 損益總覽 <span class="tag">@BASIS@</span></h1>
-<p class="sub">帳號 @ACCOUNT@　·　截至 @ASOF@　·　遺產持股另計、不列入操作損益</p>
+<p class="sub">帳號 @ACCOUNT@　·　截至 @ASOF@　·　遺產持股另計、不列入操作損益@FEESUMMARY@</p>
 <div class="hero"><div class="lbl">操作總損益（買賣價差 ＋ 現金股利）</div><div class="big">@TOTAL@ 元</div><div class="eq">@EQ@</div></div>
 <div class="tiles">
 <div class="tile"><div class="k">已實現價差</div><div class="v pos">@REALIZED@</div><div class="s">對帳單/玉山官方</div></div>
