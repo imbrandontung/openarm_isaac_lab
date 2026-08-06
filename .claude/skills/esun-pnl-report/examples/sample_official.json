@@ -1,0 +1,29 @@
+{
+  "_note": "去識別化的示範資料，僅供 validate.py 測試程式邏輯用；非任何真實帳戶。",
+  "account": "XXXX-XX**XXX",
+  "asof": "2025-03-20",
+  "basis": "含配息",
+  "months": [
+    {"month": "2025-01", "realized": 100000, "official": false, "fee": 5000, "interest": 0, "nav": 10000000},
+    {"month": "2025-02", "realized": 200000, "official": false, "fee": 6000, "interest": 1000, "nav": 12000000},
+    {"month": "2025-03", "realized": 300000, "official": true, "fee": 0, "interest": 0, "nav": null}
+  ],
+  "holdings": [
+    {"name": "股票甲", "shares": 10000, "avg": 20.0, "price": 30.0, "unreal": 100000},
+    {"name": "股票乙", "shares": 5000, "avg": 400.0, "price": 450.0, "unreal": 250000},
+    {"name": "股票丙", "shares": 200, "avg": 50.0, "price": 60.0, "unreal": 2000}
+  ],
+  "dividends": [
+    {"name": "股票甲", "per_share": 1.0, "shares": 10000, "amount": 10000},
+    {"name": "股票乙", "per_share": 3.0, "shares": 5000, "amount": 15000},
+    {"name": "股票丙", "per_share": 2.0, "shares": 200, "amount": 400}
+  ],
+  "legacy": {"name": "遺產股", "shares": 8000, "price": 30.0, "mv": 240000, "dividend": 8000, "note": "繼承持股"},
+  "_expected": {
+    "realized_total": 600000,
+    "unrealized_total": 352000,
+    "dividend_total": 25400,
+    "operation_total": 977400,
+    "legacy_excluded": true
+  }
+}
